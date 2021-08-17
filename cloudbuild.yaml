@@ -11,5 +11,5 @@ steps:
     args: [ 'run', 'deploy', "--image=gcr.io/$PROJECT_ID/livenotifications:$SHORT_SHA", '--platform=managed', '--project=$PROJECT_ID', '--region=us-central1', '--allow-unauthenticated', '--memory=256Mi', '--set-env-vars=SPRING_PROFILES_ACTIVE=gcp,SPRING_REDIS_HOST=${_REDIS_HOST},SPRING_REDIS_PORT=${_REDIS_PORT}', 'livenotifications' ]
 
 substitutions:
-  _REDIS_HOST: tobeprovided
-  _REDIS_PORT: 6379
+  _REDIS_HOST: "tobeprovided"
+  _REDIS_PORT: "6379"
