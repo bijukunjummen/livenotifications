@@ -21,14 +21,20 @@ class NotificationController(private val notificationHandler: NotificationHandle
         @RequestBody request: NotificationRequest
     ): Mono<Notification> {
         return notificationHandler.saveNotification(
-            channelId,
-            Notification(id = UUID.randomUUID().toString(), creationDate = Instant.now(), payload = request.payload)
+            Notification(
+                id = UUID.randomUUID().toString(),
+                channelId = channelId,
+                creationDate = Instant.now(),
+                payload = request.payload
+            )
         )
     }
 
     @GetMapping(path = ["/{channelId}"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun getNotifications(@PathVariable("channelId") channelId: String): Flux<ServerSentEvent<Notification>> {
-        return notificationHandler.getNotifications(channelId)
-            .map { notification -> ServerSentEvent.builder<Notification>().data(notification).build() }
+        return Flux.concat(
+            notificationHandler.getOldNotifications(channelId),
+            notificationHandler.getNotifications(channelId)
+        ).map { notification -> ServerSentEvent.builder<Notification>().data(notification).build() }
     }
 }

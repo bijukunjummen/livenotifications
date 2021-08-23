@@ -27,7 +27,12 @@ class NotificationsControllerTest {
     @Test
     fun `get a notifications stream`() {
         whenever(notificationHandler.getNotifications(any()))
-            .thenReturn(Flux.just(sampleNotification("id-1"), sampleNotification("id-2")))
+            .thenReturn(
+                Flux.just(
+                    sampleNotification("id-1", "some-channel"),
+                    sampleNotification("id-2", "some-channel")
+                )
+            )
 
         webTestClient.get()
             .uri("/notifications/some-channel")
@@ -40,6 +45,11 @@ class NotificationsControllerTest {
             }
     }
 
-    private fun sampleNotification(id: String): Notification =
-        Notification(id = id, creationDate = Instant.now(), payload = JsonNodeFactory.instance.objectNode())
+    private fun sampleNotification(id: String, channelId: String): Notification =
+        Notification(
+            id = id,
+            channelId = channelId,
+            creationDate = Instant.now(),
+            payload = JsonNodeFactory.instance.objectNode()
+        )
 }

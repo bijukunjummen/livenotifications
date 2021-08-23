@@ -11,10 +11,16 @@ import reactor.core.publisher.Mono
 @Service
 class RedisNotificationHandler(
     private val redisTemplate: ReactiveStringRedisTemplate,
+    private val notificationPersister: NotificationPersister,
     private val objectMapper: ObjectMapper
 ) : NotificationHandler {
-    override fun saveNotification(channelId: String, notification: Notification): Mono<Notification> {
-        return redisTemplate.convertAndSend(channelId, objectMapper.writeValueAsString(notification))
+    override fun saveNotification(notification: Notification): Mono<Notification> {
+        return Mono
+            .zip(
+                //Save to redis AND datastore and return..
+                redisTemplate.convertAndSend(notification.channelId, objectMapper.writeValueAsString(notification)),
+                notificationPersister.save(notification)
+            )
             .thenReturn(notification)
     }
 
@@ -24,5 +30,9 @@ class RedisNotificationHandler(
                 val notification: Notification = objectMapper.readValue(message.message)
                 notification
             }
+    }
+
+    override fun getOldNotifications(channelId: String): Flux<Notification> {
+        return notificationPersister.getOldNotifications(channelId = channelId)
     }
 }
