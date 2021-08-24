@@ -26,6 +26,13 @@ class NotificationsControllerTest {
 
     @Test
     fun `get a notifications stream`() {
+        whenever(notificationHandler.getOldNotifications(any()))
+            .thenReturn(
+                Flux.just(
+                    sampleNotification("id-old-1", "some-channel"),
+                    sampleNotification("id-old-2", "some-channel")
+                )
+            )
         whenever(notificationHandler.getNotifications(any()))
             .thenReturn(
                 Flux.just(
@@ -41,7 +48,12 @@ class NotificationsControllerTest {
             .contentType("text/event-stream;charset=UTF-8")
             .expectBody<String>()
             .consumeWith { result ->
-                assertThat(result.responseBody).contains("data:").contains("id-1").contains("id-2")
+                assertThat(result.responseBody)
+                    .contains("data:")
+                    .contains("id-old-1")
+                    .contains("id-old-2")
+                    .contains("id-1")
+                    .contains("id-2")
             }
     }
 

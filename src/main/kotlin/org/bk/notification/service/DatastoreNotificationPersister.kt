@@ -1,6 +1,7 @@
 package org.bk.notification.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.cloud.Timestamp
 import com.google.cloud.datastore.*
 import org.bk.notification.model.Notification
 import org.springframework.stereotype.Repository
@@ -37,9 +38,10 @@ class DatastoreNotificationPersister(
     }
 
     private fun toNotification(entity: Entity): Notification {
+        val timestamp: Timestamp = entity.getTimestamp("creationDate")
         return Notification(
             id = entity.key.name,
-            creationDate = Instant.ofEpochMilli(entity.getLong("creationDate")),
+            creationDate = Instant.ofEpochSecond(timestamp.seconds, timestamp.nanos.toLong()),
             channelId = entity.getString("channelId"),
             payload = objectMapper.readTree(entity.getString("payload"))
         )
@@ -50,7 +52,13 @@ class DatastoreNotificationPersister(
         val payload: String = objectMapper.writeValueAsString(notification.payload)
         return Entity.newBuilder(key)
             .set("channelId", notification.channelId)
-            .set("creationDate", notification.creationDate.toEpochMilli())
+            .set(
+                "creationDate",
+                Timestamp.ofTimeSecondsAndNanos(
+                    notification.creationDate.epochSecond,
+                    notification.creationDate.nano
+                )
+            )
             .set("payload", payload)
             .build()
     }
