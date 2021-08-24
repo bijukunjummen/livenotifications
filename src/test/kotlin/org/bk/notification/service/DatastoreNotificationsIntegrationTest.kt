@@ -3,6 +3,7 @@ package org.bk.notification.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.google.api.gax.core.NoCredentialsProvider
+import com.google.cloud.NoCredentials
 import com.google.cloud.datastore.DatastoreOptions
 import org.assertj.core.api.Assertions.assertThat
 import org.bk.notification.model.Notification
@@ -31,6 +32,7 @@ class DatastoreNotificationsIntegrationTest {
         val builder: DatastoreOptions.Builder = DatastoreOptions
             .newBuilder()
         builder.setHost(emulator.emulatorEndpoint)
+        builder.setCredentials(NoCredentials.getInstance())
         val datastore = builder.build().service
         persister = DatastoreNotificationPersister(datastore, objectMapper)
     }
