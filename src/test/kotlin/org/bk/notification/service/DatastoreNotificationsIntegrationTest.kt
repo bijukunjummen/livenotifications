@@ -31,7 +31,7 @@ class DatastoreNotificationsIntegrationTest {
     fun beforeEach() {
         val builder: DatastoreOptions.Builder = DatastoreOptions
             .newBuilder()
-        builder.setHost(emulator.emulatorEndpoint)
+        builder.setHost("http://${emulator.emulatorEndpoint}")
         builder.setCredentials(NoCredentials.getInstance())
 
         val datastore = try {
