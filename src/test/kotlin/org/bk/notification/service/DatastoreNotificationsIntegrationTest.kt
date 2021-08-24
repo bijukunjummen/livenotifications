@@ -33,7 +33,13 @@ class DatastoreNotificationsIntegrationTest {
             .newBuilder()
         builder.setHost(emulator.emulatorEndpoint)
         builder.setCredentials(NoCredentials.getInstance())
-        val datastore = builder.build().service
+
+        val datastore = try {
+            builder.build().service
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw e
+        }
         persister = DatastoreNotificationPersister(datastore, objectMapper)
     }
 
