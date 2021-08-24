@@ -45,9 +45,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    testLogging {
-        showStandardStreams = true
-    }
+//    testLogging {
+//        showStandardStreams = true
+//    }
 }
 
 bootRun {
