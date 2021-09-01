@@ -1,0 +1,6 @@
+indexes:
+  - kind: notifications
+    properties:
+      - name: channelId
+      - name: creationDate
+        direction: desc
