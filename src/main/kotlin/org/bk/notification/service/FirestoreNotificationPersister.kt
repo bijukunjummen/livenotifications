@@ -29,7 +29,7 @@ class FirestoreNotificationPersister(
             .collection(NOTIFICATIONS)
             .document(notification.id)
         val result: ApiFuture<WriteResult> = documentReference.set(entityFrom(notification))
-        return result.toMono().map { result -> notification }
+        return result.toMono().map { notification }
     }
 
     override fun getLatestSavedNotifications(count: Int, channelId: String, latestFirst: Boolean): Flux<Notification> {
