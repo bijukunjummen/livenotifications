@@ -17,7 +17,7 @@ class RedisNotificationHandler(
     override fun saveNotification(notification: Notification): Mono<Notification> {
         return Mono
             .zip(
-                //Save to redis AND datastore and return..
+                //Save to redis AND firestore and return..
                 redisTemplate.convertAndSend(notification.channelId, objectMapper.writeValueAsString(notification)),
                 notificationPersister.save(notification)
             )
@@ -33,6 +33,6 @@ class RedisNotificationHandler(
     }
 
     override fun getOldNotifications(channelId: String): Flux<Notification> {
-        return notificationPersister.getOldNotifications(channelId = channelId)
+        return notificationPersister.getLatestSavedNotifications(channelId = channelId, latestFirst = false)
     }
 }

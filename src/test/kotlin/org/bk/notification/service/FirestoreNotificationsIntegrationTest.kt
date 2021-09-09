@@ -2,16 +2,15 @@ package org.bk.notification.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.google.api.gax.core.NoCredentialsProvider
 import com.google.cloud.NoCredentials
-import com.google.cloud.datastore.DatastoreOptions
+import com.google.cloud.firestore.FirestoreOptions
 import org.assertj.core.api.Assertions.assertThat
 import org.bk.notification.model.Notification
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
-import org.testcontainers.containers.DatastoreEmulatorContainer
+import org.testcontainers.containers.FirestoreEmulatorContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
@@ -20,16 +19,16 @@ import java.time.Instant
 
 @JsonTest
 @Testcontainers
-class DatastoreNotificationsIntegrationTest {
+class FirestoreNotificationsIntegrationTest {
 
-    private lateinit var persister: DatastoreNotificationPersister
+    private lateinit var persister: FirestoreNotificationPersister
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
     @BeforeEach
     fun beforeEach() {
-        val builder: DatastoreOptions.Builder = DatastoreOptions
+        val builder: FirestoreOptions.Builder = FirestoreOptions
             .newBuilder()
         builder.setHost("http://${emulator.emulatorEndpoint}")
         builder.setCredentials(NoCredentials.getInstance())
@@ -40,11 +39,11 @@ class DatastoreNotificationsIntegrationTest {
             e.printStackTrace()
             throw e
         }
-        persister = DatastoreNotificationPersister(datastore, objectMapper)
+        persister = FirestoreNotificationPersister(datastore, objectMapper)
     }
 
     @Test
-    fun `save and retrieve from datastore`() {
+    fun `save and retrieve from firestore`() {
         val notification = sampleNotification("id-1", "some-channel")
         StepVerifier.create(persister.save(notification))
             .assertNext { savedNotification ->
@@ -52,7 +51,7 @@ class DatastoreNotificationsIntegrationTest {
             }
             .verifyComplete()
 
-        StepVerifier.create(persister.getOldNotifications(channelId = "some-channel"))
+        StepVerifier.create(persister.getLatestSavedNotifications(channelId = "some-channel"))
             .assertNext { n ->
                 assertThat(n).isEqualTo(notification)
             }
@@ -70,7 +69,7 @@ class DatastoreNotificationsIntegrationTest {
     companion object {
         @JvmStatic
         @Container
-        private val emulator = DatastoreEmulatorContainer(
+        private val emulator = FirestoreEmulatorContainer(
             DockerImageName.parse("gcr.io/google.com/cloudsdktool/cloud-sdk:316.0.0-emulators")
         )
     }

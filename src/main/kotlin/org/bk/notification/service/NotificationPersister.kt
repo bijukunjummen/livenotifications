@@ -18,5 +18,5 @@ interface NotificationPersister {
      *
      * @param count of recent notifications
      */
-    fun getOldNotifications(count: Int = 25, channelId: String): Flux<Notification>
+    fun getLatestSavedNotifications(count: Int = 25, channelId: String, latestFirst:Boolean = true): Flux<Notification>
 }

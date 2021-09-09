@@ -1,2 +1,2 @@
-datastore:
-  host: "localhost:8081"
+firestore:
+  host: "localhost:8662"

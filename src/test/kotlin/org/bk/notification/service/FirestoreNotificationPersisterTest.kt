@@ -2,7 +2,7 @@ package org.bk.notification.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.google.cloud.datastore.Datastore
+import com.google.cloud.firestore.Firestore
 import org.assertj.core.api.Assertions.assertThat
 import org.bk.notification.model.Notification
 import org.junit.jupiter.api.BeforeEach
@@ -14,27 +14,27 @@ import reactor.test.StepVerifier
 import java.time.Instant
 
 @JsonTest
-class DatastoreNotificationPersisterTest {
-    private lateinit var datastoreNotificationPersister: DatastoreNotificationPersister
+class FirestoreNotificationPersisterTest {
+    private lateinit var persister: FirestoreNotificationPersister
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
     @MockBean
-    private lateinit var datastore: Datastore
+    private lateinit var firestore: Firestore
 
     @BeforeEach
     fun setUp() {
-        datastoreNotificationPersister = DatastoreNotificationPersister(datastore, objectMapper)
+        persister = FirestoreNotificationPersister(firestore, objectMapper)
     }
 
     @Test
     fun `save notification`() {
         val original = sampleNotification("id-1", "some-channel")
-        StepVerifier.create(datastoreNotificationPersister.save(original))
-             .assertNext{saved ->
-                 assertThat(saved).isEqualTo(original)
-             }
+        StepVerifier.create(persister.save(original))
+            .assertNext { saved ->
+                assertThat(saved).isEqualTo(original)
+            }
             .expectComplete()
     }
 

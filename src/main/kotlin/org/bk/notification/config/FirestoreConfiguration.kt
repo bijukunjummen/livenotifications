@@ -1,30 +1,30 @@
 package org.bk.notification.config
 
-import com.google.cloud.datastore.Datastore
-import com.google.cloud.datastore.DatastoreOptions
+import com.google.cloud.firestore.Firestore
+import com.google.cloud.firestore.FirestoreOptions
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 
 @Configuration
-class DatastoreConfiguration {
+class FirestoreConfiguration {
 
     @Bean
     @Profile("!local")
-    fun datastore(): Datastore {
-        val builder: DatastoreOptions.Builder = DatastoreOptions
+    fun firestore(): Firestore {
+        val builder: FirestoreOptions.Builder = FirestoreOptions
             .newBuilder()
         return builder.build().service
     }
 
     @Bean
     @Profile("local")
-    fun datastoreLocal(@Value("\${datastore.host:}") datastoreHost: String): Datastore {
-        val builder: DatastoreOptions.Builder = DatastoreOptions
+    fun firestoreLocal(@Value("\${firestore.host:}") firestoreHost: String): Firestore {
+        val builder: FirestoreOptions.Builder = FirestoreOptions
             .newBuilder()
-        if (datastoreHost.isNotEmpty()) {
-            builder.setHost(datastoreHost)
+        if (firestoreHost.isNotEmpty()) {
+            builder.setHost(firestoreHost)
         }
         return builder.build().service
     }

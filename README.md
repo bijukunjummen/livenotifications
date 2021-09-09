@@ -6,11 +6,11 @@
 redis-server
 ```
 
-### Start Cloud Datastore emulator
+### Start Cloud Firestore emulator
 
 ```shell
-gcloud components install cloud-datastore-emulator
-gcloud beta emulators datastore start
+gcloud components install cloud-firestore-emulator
+gcloud beta emulators firestore start
 ```
 
 # Get Live Notifications
