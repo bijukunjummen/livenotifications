@@ -65,6 +65,9 @@ steps:
       - name: caching.home
         path: /cachinghome
   - name: 'gcr.io/cloud-builders/gcloud'
+    waitFor:
+      - build-image
+    id: "deploy"
     args:
       - 'run'
       - 'deploy'
