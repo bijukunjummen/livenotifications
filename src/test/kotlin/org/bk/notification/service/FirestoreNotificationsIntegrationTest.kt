@@ -30,7 +30,7 @@ class FirestoreNotificationsIntegrationTest {
     fun beforeEach() {
         val builder: FirestoreOptions.Builder = FirestoreOptions
             .newBuilder()
-        builder.setHost("http://${emulator.emulatorEndpoint}")
+        builder.setEmulatorHost("${emulator.emulatorEndpoint}")
         builder.setCredentials(NoCredentials.getInstance())
 
         val datastore = try {

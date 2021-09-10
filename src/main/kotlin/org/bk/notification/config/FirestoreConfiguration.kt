@@ -24,7 +24,7 @@ class FirestoreConfiguration {
         val builder: FirestoreOptions.Builder = FirestoreOptions
             .newBuilder()
         if (firestoreHost.isNotEmpty()) {
-            builder.setHost(firestoreHost)
+            builder.setEmulatorHost(firestoreHost)
         }
         return builder.build().service
     }
