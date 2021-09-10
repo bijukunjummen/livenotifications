@@ -1,12 +1,69 @@
 steps:
+  - waitFor: [ '-' ]
+    name: gcr.io/cloud-builders/gsutil
+    dir: /cachinghome
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gsutil ls -b gs://${_GCS_CACHE_BUCKET} || gsutil mb -l gs://${_GCS_CACHE_BUCKET}
+
+        (
+          gsutil cp gs://${_GCS_CACHE_BUCKET}/${_GCS_CACHE_FILE}.tar.gz /tmp/gradle-cache.tar.gz &&
+          tar -xzf /tmp/gradle-cache.tar.gz
+        ) || echo 'Cache not found'
+    volumes:
+      - name: caching.home
+        path: /cachinghome
   - name: openjdk:11
     id: test
-    entrypoint: "./gradlew"
-    args: [ "check" ]
+    entrypoint: "/bin/bash"
+    args:
+      - '-c'
+      - |-
+        set -x
+        export CACHING_HOME="/cachinghome"
+        USER_HOME="/root"
+        M2_HOME="$${USER_HOME}/.m2"
+        M2_CACHE="$${CACHING_HOME}/maven"
+        GRADLE_HOME="$${USER_HOME}/.gradle"
+        GRADLE_CACHE="$${CACHING_HOME}/gradle"
+
+        echo "Generating symbolic links for caches"
+        mkdir -p $${M2_CACHE}
+        mkdir -p $${GRADLE_CACHE}
+
+        [[ -d "$${M2_CACHE}" && ! -d "$${M2_HOME}" ]] && ln -s "$${M2_CACHE}" "$${M2_HOME}"
+        [[ -d "$${GRADLE_CACHE}" && ! -d "$${GRADLE_HOME}" ]] && ln -s "$${GRADLE_CACHE}" "$${GRADLE_HOME}"
+        ./gradlew check
+    volumes:
+      - name: caching.home
+        path: /cachinghome
+
   - name: openjdk:11
     id: build-image
-    entrypoint: "./gradlew"
-    args: [ "jib", "--image=gcr.io/$PROJECT_ID/livenotifications:$SHORT_SHA" ]
+    entrypoint: "/bin/bash"
+    args:
+      - '-c'
+      - |-
+        set -x
+        export CACHING_HOME="/cachinghome"
+        USER_HOME="/root"
+        M2_HOME="$${USER_HOME}/.m2"
+        M2_CACHE="$${CACHING_HOME}/maven"
+        GRADLE_HOME="$${USER_HOME}/.gradle"
+        GRADLE_CACHE="$${CACHING_HOME}/gradle"
+
+        echo "Generating symbolic links for caches"
+        mkdir -p $${M2_CACHE}
+        mkdir -p $${GRADLE_CACHE}
+
+        [[ -d "$${M2_CACHE}" && ! -d "$${M2_HOME}" ]] && ln -s "$${M2_CACHE}" "$${M2_HOME}"
+        [[ -d "$${GRADLE_CACHE}" && ! -d "$${GRADLE_HOME}" ]] && ln -s "$${GRADLE_CACHE}" "$${GRADLE_HOME}"
+        ./gradlew jib --image=gcr.io/$PROJECT_ID/livenotifications:$SHORT_SHA
+    volumes:
+      - name: caching.home
+        path: /cachinghome
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
@@ -21,6 +78,21 @@ steps:
       - '--set-env-vars=SPRING_PROFILES_ACTIVE=gcp,SPRING_REDIS_HOST=${_REDIS_HOST},SPRING_REDIS_PORT=${_REDIS_PORT}'
       - "--vpc-connector=memorystoreconnector"
       - 'livenotifications'
+  - waitFor:
+      - deploy
+    name: gcr.io/cloud-builders/gsutil
+    dir: /cachinghome
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        tar -czf /tmp/gradle-cache.tar.gz gradle/ &&
+        gsutil cp /tmp/gradle-cache.tar.gz gs://${_GCS_CACHE_BUCKET}/${_GCS_CACHE_FILE}.tar.gz
+    volumes:
+      - name: caching.home
+        path: /cachinghome
 substitutions:
+  _GCS_CACHE_BUCKET: <some bucket for caching gradle file>
+  _GCS_CACHE_FILE: <file to hold cached content>
   _REDIS_HOST: "tobeprovided"
   _REDIS_PORT: "6379"
