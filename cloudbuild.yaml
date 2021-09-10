@@ -5,10 +5,10 @@ steps:
     entrypoint: bash
     args:
       - -c
-      - |
+      - |-
         set -x
-        gsutil ls -b gs://${_GCS_CACHE_BUCKET} \
-        || gsutil mb -l gs://${_GCS_CACHE_BUCKET}
+        (gsutil ls -b gs://${_GCS_CACHE_BUCKET}
+        || gsutil mb -l gs://${_GCS_CACHE_BUCKET})
 
         (
           gsutil cp gs://${_GCS_CACHE_BUCKET}/${_GCS_CACHE_FILE}.tar.gz /tmp/gradle-cache.tar.gz &&
