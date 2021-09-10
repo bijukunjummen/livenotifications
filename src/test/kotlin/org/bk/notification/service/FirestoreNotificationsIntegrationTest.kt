@@ -31,15 +31,16 @@ class FirestoreNotificationsIntegrationTest {
         val builder: FirestoreOptions.Builder = FirestoreOptions
             .newBuilder()
         builder.setEmulatorHost("${emulator.emulatorEndpoint}")
+        builder.setHost("${emulator.emulatorEndpoint}")
         builder.setCredentials(NoCredentials.getInstance())
 
-        val datastore = try {
+        val firestore = try {
             builder.build().service
         } catch (e: Exception) {
             e.printStackTrace()
             throw e
         }
-        persister = FirestoreNotificationPersister(datastore, objectMapper)
+        persister = FirestoreNotificationPersister(firestore, objectMapper)
     }
 
     @Test

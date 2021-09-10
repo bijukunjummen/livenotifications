@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class FirestoreConfiguration {
-
     @Bean
     @Profile("!local")
     fun firestore(): Firestore {
@@ -25,6 +24,7 @@ class FirestoreConfiguration {
             .newBuilder()
         if (firestoreHost.isNotEmpty()) {
             builder.setEmulatorHost(firestoreHost)
+            builder.setHost(firestoreHost)
         }
         return builder.build().service
     }
