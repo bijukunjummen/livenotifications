@@ -6,7 +6,7 @@ steps:
     args:
       - -c
       - |
-        gsutil ls -b gs://${_GCS_CACHE_BUCKET} || gsutil mb -l gs://${_GCS_CACHE_BUCKET}
+        (gsutil ls -b gs://${_GCS_CACHE_BUCKET} || gsutil mb -l gs://${_GCS_CACHE_BUCKET})
 
         (
           gsutil cp gs://${_GCS_CACHE_BUCKET}/${_GCS_CACHE_FILE}.tar.gz /tmp/gradle-cache.tar.gz &&
@@ -79,7 +79,7 @@ steps:
       - '--memory=768Mi'
       - '--min-instances=1'
       - '--set-env-vars=SPRING_PROFILES_ACTIVE=gcp,SPRING_REDIS_HOST=${_REDIS_HOST},SPRING_REDIS_PORT=${_REDIS_PORT}'
-      - "--vpc-connector=memorystoreconnector"
+      - "--vpc-connector=${_VPC_CONNECTOR}"
       - 'livenotifications'
   - waitFor:
       - deploy
@@ -99,3 +99,4 @@ substitutions:
   _GCS_CACHE_FILE: <file to hold cached content>
   _REDIS_HOST: "tobeprovided"
   _REDIS_PORT: "6379"
+  _VPC_CONNECTOR: "tobeprovided"
