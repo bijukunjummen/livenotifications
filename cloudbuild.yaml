@@ -84,6 +84,7 @@ steps:
       - '--min-instances=1'
       - '--set-env-vars=SPRING_PROFILES_ACTIVE=gcp,SPRING_REDIS_HOST=${_REDIS_HOST},SPRING_REDIS_PORT=${_REDIS_PORT}'
       - "--vpc-connector=${_VPC_CONNECTOR}"
+      - "--service-account=${_SERVICE_ACCOUNT}"
       - 'livenotifications'
   - waitFor:
       - deploy
