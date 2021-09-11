@@ -9,7 +9,7 @@ steps:
         set -x
         (
           gsutil ls -b gs://${_GCS_CACHE_BUCKET} ||
-          gsutil mb  gs://${_GCS_CACHE_BUCKET}
+          gsutil mb gs://${_GCS_CACHE_BUCKET}
         )
 
         (
