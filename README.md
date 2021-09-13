@@ -10,24 +10,42 @@ redis-server
 
 ```shell
 gcloud components install cloud-firestore-emulator
-gcloud beta emulators firestore start
+gcloud beta emulators firestore start --host-port=:8662
 ```
 
-# Get Live Notifications
+# Create chat rooms
 
 ```sh
-curl -v http://localhost:8080/notifications/some-channel
+curl -v -X POST  \
+  -H "Content-type: application/json" \
+  -H "Accept: application/json" \
+   http://localhost:8080/chatrooms \
+   -d '{
+   "id": "some-room",
+   "name": "some-room"
+}'
 ```
 
-# Create a live notification
+# Get Chat Room
+
+```sh
+curl -v http://localhost:8080/chatrooms/some-room
+```
+
+# Stream Messages from room 
+
+```sh
+curl -v http://localhost:8080/messages/some-room
+```
+
+# Add a messsage to a room
 ```sh
 curl -v -X POST \
   -H "Content-type: application/json" \
   -H "Accept: application/json" \
-   http://localhost:8080/notifications/some-channel \
+   http://localhost:8080/messages/some-room \
    -d '{
-   "id": "test",
-   "payload": {"name": "test", "more": "attributes"}
+   "payload": "hello world"
 }'
 ```
 It should show up on the previous GET endpoint

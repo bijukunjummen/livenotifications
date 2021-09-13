@@ -1,11 +1,11 @@
 package org.bk.notification.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.google.cloud.NoCredentials
 import com.google.cloud.firestore.FirestoreOptions
 import org.assertj.core.api.Assertions.assertThat
-import org.bk.notification.model.Notification
+import org.bk.notification.model.ChatMessage
+import org.bk.notification.model.ChatRoom
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +21,8 @@ import java.time.Instant
 @Testcontainers
 class FirestoreNotificationsIntegrationTest {
 
-    private lateinit var persister: FirestoreNotificationPersister
+    private lateinit var chatMessageRepository: FirestoreChatMessageRepository
+    private lateinit var chatRoomRepository: FirestoreChatRoomRepository
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
@@ -40,31 +41,39 @@ class FirestoreNotificationsIntegrationTest {
             e.printStackTrace()
             throw e
         }
-        persister = FirestoreNotificationPersister(firestore, objectMapper)
+        chatMessageRepository = FirestoreChatMessageRepository(firestore)
+        chatRoomRepository = FirestoreChatRoomRepository(firestore)
     }
 
     @Test
     fun `save and retrieve from firestore`() {
         val notification = sampleNotification("id-1", "some-channel")
-        StepVerifier.create(persister.save(notification))
+        val chatRoom = ChatRoom("some-channel", "some-channel")
+        StepVerifier.create(chatRoomRepository.save(chatRoom))
+            .assertNext {savedRoom ->
+                assertThat(savedRoom).isEqualTo(chatRoom)
+            }
+            .verifyComplete()
+
+        StepVerifier.create(chatMessageRepository.save(notification))
             .assertNext { savedNotification ->
                 assertThat(savedNotification).isEqualTo(notification)
             }
             .verifyComplete()
 
-        StepVerifier.create(persister.getLatestSavedNotifications(channelId = "some-channel"))
+        StepVerifier.create(chatMessageRepository.getLatestSavedChatMessages(channelId = "some-channel"))
             .assertNext { n ->
                 assertThat(n).isEqualTo(notification)
             }
             .verifyComplete()
     }
 
-    private fun sampleNotification(id: String, channelId: String): Notification =
-        Notification(
+    private fun sampleNotification(id: String, channelId: String): ChatMessage =
+        ChatMessage(
             id = id,
-            channelId = channelId,
+            chatRoomId = channelId,
             creationDate = Instant.now(),
-            payload = JsonNodeFactory.instance.objectNode()
+            payload = "some payload"
         )
 
     companion object {
