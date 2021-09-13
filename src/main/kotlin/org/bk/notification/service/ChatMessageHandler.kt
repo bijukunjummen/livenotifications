@@ -6,6 +6,6 @@ import reactor.core.publisher.Mono
 
 interface ChatMessageHandler {
     fun saveChatMessage(chatMessage: ChatMessage): Mono<ChatMessage>
-    fun getChatMessages(channelId: String): Flux<ChatMessage>
-    fun getOldChatMessages(channelId: String): Flux<ChatMessage>
+    fun getChatMessages(chatRoomId: String): Flux<ChatMessage>
+    fun getOldChatMessages(chatRoomId: String): Flux<ChatMessage>
 }

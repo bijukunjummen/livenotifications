@@ -21,7 +21,7 @@ class LiveChatMessageHandler(
         val roomId = chatMessage.chatRoomId
         return chatRoomRepository.getRoom(roomId)
             .switchIfEmpty { Mono.error(ChatRoomNotFoundException("Chat room $roomId missing")) }
-            .flatMap { chatRoom ->
+            .flatMap {
                 Mono.zip(
                     //Save to redis AND firestore and return..
                     redisTemplate.convertAndSend(
@@ -37,7 +37,7 @@ class LiveChatMessageHandler(
     override fun getChatMessages(chatRoomId: String): Flux<ChatMessage> {
         return chatRoomRepository.getRoom(chatRoomId)
             .switchIfEmpty { Mono.error(ChatRoomNotFoundException("Chat room $chatRoomId missing")) }
-            .flatMapMany { chatRoom ->
+            .flatMapMany {
                 redisTemplate.listenToChannel(chatRoomId)
                     .map { message ->
                         val chatMessage: ChatMessage = objectMapper.readValue(message.message)
@@ -46,7 +46,7 @@ class LiveChatMessageHandler(
             }
     }
 
-    override fun getOldChatMessages(channelId: String): Flux<ChatMessage> {
-        return chatMessageRepository.getLatestSavedChatMessages(channelId = channelId, latestFirst = false)
+    override fun getOldChatMessages(chatRoomId: String): Flux<ChatMessage> {
+        return chatMessageRepository.getLatestSavedChatMessages(channelId = chatRoomId, latestFirst = false)
     }
 }

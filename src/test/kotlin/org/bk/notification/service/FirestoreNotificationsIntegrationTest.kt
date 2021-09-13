@@ -61,7 +61,7 @@ class FirestoreNotificationsIntegrationTest {
             }
             .verifyComplete()
 
-        StepVerifier.create(chatMessageRepository.getLatestSavedChatMessages(chatRoomId = "some-channel"))
+        StepVerifier.create(chatMessageRepository.getLatestSavedChatMessages(channelId = "some-channel"))
             .assertNext { n ->
                 assertThat(n).isEqualTo(notification)
             }

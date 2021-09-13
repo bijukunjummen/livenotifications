@@ -22,32 +22,31 @@ class FirestoreChatMessageRepository(
     private val firestore: Firestore
 ) : ChatMessageRepository {
     override fun save(chatMessage: ChatMessage): Mono<ChatMessage> {
-        val documentReference: DocumentReference = firestore.collection(CHANNELS)
-            .document(chatMessage.chatRoomId)
-            .collection(NOTIFICATIONS)
-            .document(chatMessage.id)
-        val result: ApiFuture<WriteResult> = documentReference.set(entityFrom(chatMessage))
-        return result.toMono().map { chatMessage }
+        return Mono.defer {
+            val documentReference: DocumentReference = firestore.collection(CHANNELS)
+                .document(chatMessage.chatRoomId)
+                .collection(NOTIFICATIONS)
+                .document(chatMessage.id)
+            val result: ApiFuture<WriteResult> = documentReference.set(entityFrom(chatMessage))
+            result.toMono().map { chatMessage }
+        }
     }
 
-    override fun getLatestSavedChatMessages(count: Int, chatRoomId: String, latestFirst: Boolean): Flux<ChatMessage> {
-        val chatRoomDocumentReference: DocumentReference = firestore.collection(CHANNELS).document(chatRoomId)
-        val chatRoomDocument: ApiFuture<DocumentSnapshot> = chatRoomDocumentReference.get()
-        return chatRoomDocument.toMono()
-            .flatMapMany { chatRoom: DocumentSnapshot ->
-                val notificationCollectionRef: CollectionReference =
-                    firestore.collection(CHANNELS).document(chatRoomId).collection(NOTIFICATIONS)
-                val query: Query =
-                    notificationCollectionRef.orderBy(CREATION_DATE, Query.Direction.DESCENDING).limit(count)
-                val result: ApiFuture<QuerySnapshot> = query.get()
+    override fun getLatestSavedChatMessages(count: Int, channelId: String, latestFirst: Boolean): Flux<ChatMessage> {
+        return Flux.defer {
+            val notificationCollectionRef: CollectionReference =
+                firestore.collection(CHANNELS).document(channelId).collection(NOTIFICATIONS)
+            val query: Query =
+                notificationCollectionRef.orderBy(CREATION_DATE, Query.Direction.DESCENDING).limit(count)
+            val result: ApiFuture<QuerySnapshot> = query.get()
 
-                result.toMono()
-                    .flatMapIterable { querySnapshot: QuerySnapshot ->
-                        val docs: List<QueryDocumentSnapshot> = querySnapshot.documents
-                        if (latestFirst) docs else docs.reversed()
-                    }
-                    .map { queryDocumentSnapshot -> toChatMessage(chatRoomId, queryDocumentSnapshot) }
-            }
+            result.toMono()
+                .flatMapIterable { querySnapshot: QuerySnapshot ->
+                    val docs: List<QueryDocumentSnapshot> = querySnapshot.documents
+                    if (latestFirst) docs else docs.reversed()
+                }
+                .map { queryDocumentSnapshot -> toChatMessage(channelId, queryDocumentSnapshot) }
+        }
     }
 
     private fun toChatMessage(channelId: String, documentSnapshot: DocumentSnapshot): ChatMessage {
