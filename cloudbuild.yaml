@@ -44,7 +44,7 @@ steps:
       - name: caching.home
         path: /cachinghome
 
-  - name: openjdk:11
+  - name: openjdk:17
     id: build-image
     entrypoint: "/bin/bash"
     args:
@@ -64,7 +64,7 @@ steps:
 
         [[ -d "$${M2_CACHE}" && ! -d "$${M2_HOME}" ]] && ln -s "$${M2_CACHE}" "$${M2_HOME}"
         [[ -d "$${GRADLE_CACHE}" && ! -d "$${GRADLE_HOME}" ]] && ln -s "$${GRADLE_CACHE}" "$${GRADLE_HOME}"
-        ./gradlew jib --image=gcr.io/$PROJECT_ID/livenotifications:$SHORT_SHA
+        ./gradlew bootBuildImage --imageName=us-docker.pkg.dev/$PROJECT_ID/docker-repo/livenotifications:$SHORT_SHA
     volumes:
       - name: caching.home
         path: /cachinghome
@@ -75,7 +75,7 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - "--image=gcr.io/$PROJECT_ID/livenotifications:$SHORT_SHA"
+      - "--image=us-docker.pkg.dev/$PROJECT_ID/docker-repo/livenotifications:$SHORT_SHA"
       - '--platform=managed'
       - '--project=$PROJECT_ID'
       - '--region=us-central1'

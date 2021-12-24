@@ -1,14 +1,14 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.5.21'
-    id 'org.springframework.boot' version '2.5.3'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.6.10'
+    id 'org.springframework.boot' version '2.6.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'com.google.cloud.tools.jib' version '3.1.2'
+    id 'com.google.cloud.tools.jib' version '3.1.4'
 }
 
 group = 'org.bk'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
@@ -17,13 +17,13 @@ repositories {
 compileKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 compileTestKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -37,11 +37,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
-    implementation platform('com.google.cloud:libraries-bom:23.0.0')
+    implementation platform('com.google.cloud:libraries-bom:24.1.1')
     implementation('com.google.cloud:google-cloud-firestore')
-    testImplementation("org.testcontainers:testcontainers:1.16.0")
-    testImplementation("org.testcontainers:gcloud:1.16.0")
-    testImplementation("org.testcontainers:junit-jupiter:1.16.0")
+    testImplementation("org.testcontainers:testcontainers:1.16.2")
+    testImplementation("org.testcontainers:gcloud:1.16.2")
+    testImplementation("org.testcontainers:junit-jupiter:1.16.2")
 }
 
 test {

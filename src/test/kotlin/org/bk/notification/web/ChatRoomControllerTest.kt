@@ -28,29 +28,29 @@ class ChatRoomControllerTest {
     fun `create and retrieve chatroom`() {
         val chatRoom = ChatRoom(id = "some-room", name = "some-room")
         whenever(chatRoomRepository.save(any()))
-            .thenAnswer { invocation ->
-                Mono.just(invocation.arguments[0] as ChatRoom)
-            }
+                .thenAnswer { invocation ->
+                    Mono.just(invocation.arguments[0] as ChatRoom)
+                }
         whenever(chatRoomRepository.getRoom(any()))
-            .thenAnswer { invocation ->
-                Mono.just(chatRoom)
-            }
+                .thenAnswer {
+                    Mono.just(chatRoom)
+                }
 
         webTestClient.post()
-            .uri("/chatrooms")
-            .body(BodyInserters.fromValue(ChatRoom(id = "some-room", name = "some-room")))
-            .exchange()
-            .expectBody()
-            .jsonPath("$.id").isEqualTo("some-room")
-            .jsonPath("$.name").isEqualTo("some-room")
+                .uri("/chatrooms")
+                .body(BodyInserters.fromValue(ChatRoom(id = "some-room", name = "some-room")))
+                .exchange()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("some-room")
+                .jsonPath("$.name").isEqualTo("some-room")
 
         webTestClient.get()
-            .uri("/chatrooms/some-room")
-            .exchange()
-            .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
-            .expectBody()
-            .jsonPath("$.id").isEqualTo("some-room")
-            .jsonPath("$.name").isEqualTo("some-room")
+                .uri("/chatrooms/some-room")
+                .exchange()
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("some-room")
+                .jsonPath("$.name").isEqualTo("some-room")
     }
 }

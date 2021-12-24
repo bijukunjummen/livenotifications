@@ -30,7 +30,7 @@ class FirestoreNotificationsIntegrationTest {
     @BeforeEach
     fun beforeEach() {
         val builder: FirestoreOptions.Builder = FirestoreOptions
-            .newBuilder()
+                .newBuilder()
         builder.setEmulatorHost("${emulator.emulatorEndpoint}")
         builder.setHost("${emulator.emulatorEndpoint}")
         builder.setCredentials(NoCredentials.getInstance())
@@ -50,37 +50,37 @@ class FirestoreNotificationsIntegrationTest {
         val notification = sampleNotification("id-1", "some-channel")
         val chatRoom = ChatRoom("some-channel", "some-channel")
         StepVerifier.create(chatRoomRepository.save(chatRoom))
-            .assertNext {savedRoom ->
-                assertThat(savedRoom).isEqualTo(chatRoom)
-            }
-            .verifyComplete()
+                .assertNext { savedRoom ->
+                    assertThat(savedRoom).isEqualTo(chatRoom)
+                }
+                .verifyComplete()
 
         StepVerifier.create(chatMessageRepository.save(notification))
-            .assertNext { savedNotification ->
-                assertThat(savedNotification).isEqualTo(notification)
-            }
-            .verifyComplete()
+                .assertNext { savedNotification ->
+                    assertThat(savedNotification).isEqualTo(notification)
+                }
+                .verifyComplete()
 
         StepVerifier.create(chatMessageRepository.getLatestSavedChatMessages(channelId = "some-channel"))
-            .assertNext { n ->
-                assertThat(n).isEqualTo(notification)
-            }
-            .verifyComplete()
+                .assertNext { n ->
+                    assertThat(n).isEqualTo(notification)
+                }
+                .verifyComplete()
     }
 
     private fun sampleNotification(id: String, channelId: String): ChatMessage =
-        ChatMessage(
-            id = id,
-            chatRoomId = channelId,
-            creationDate = Instant.now(),
-            payload = "some payload"
-        )
+            ChatMessage(
+                    id = id,
+                    chatRoomId = channelId,
+                    creationDate = Instant.now(),
+                    payload = "some payload"
+            )
 
     companion object {
         @JvmStatic
         @Container
         private val emulator = FirestoreEmulatorContainer(
-            DockerImageName.parse("gcr.io/google.com/cloudsdktool/cloud-sdk:316.0.0-emulators")
+                DockerImageName.parse("gcr.io/google.com/cloudsdktool/cloud-sdk:316.0.0-emulators")
         )
     }
 }

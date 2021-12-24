@@ -29,64 +29,64 @@ class ChatMessagesControllerTest {
     @Test
     fun `get a notifications stream`() {
         whenever(chatMessageHandler.getOldChatMessages(any()))
-            .thenReturn(
-                Flux.just(
-                    sampleChatMessage("id-old-1", "some-channel"),
-                    sampleChatMessage("id-old-2", "some-channel")
+                .thenReturn(
+                        Flux.just(
+                                sampleChatMessage("id-old-1", "some-channel"),
+                                sampleChatMessage("id-old-2", "some-channel")
+                        )
                 )
-            )
         whenever(chatMessageHandler.getChatMessages(any()))
-            .thenReturn(
-                Flux.just(
-                    sampleChatMessage("id-1", "some-channel"),
-                    sampleChatMessage("id-2", "some-channel")
+                .thenReturn(
+                        Flux.just(
+                                sampleChatMessage("id-1", "some-channel"),
+                                sampleChatMessage("id-2", "some-channel")
+                        )
                 )
-            )
 
         webTestClient.get()
-            .uri("/messages/some-channel")
-            .exchange()
-            .expectHeader()
-            .contentType("text/event-stream;charset=UTF-8")
-            .expectBody<String>()
-            .consumeWith { result ->
-                assertThat(result.responseBody)
-                    .contains("data:")
-                    .contains("id-old-1")
-                    .contains("id-old-2")
-                    .contains("id-1")
-                    .contains("id-2")
-            }
+                .uri("/messages/some-channel")
+                .exchange()
+                .expectHeader()
+                .contentType("text/event-stream;charset=UTF-8")
+                .expectBody<String>()
+                .consumeWith { result ->
+                    assertThat(result.responseBody)
+                            .contains("data:")
+                            .contains("id-old-1")
+                            .contains("id-old-2")
+                            .contains("id-1")
+                            .contains("id-2")
+                }
     }
 
     @Test
     fun `get a notifications stream in a invalid room`() {
         whenever(chatMessageHandler.getOldChatMessages(any()))
-            .thenReturn(
-                Flux.error(ChatRoomNotFoundException(msg = "Room not found"))
-            )
-        whenever(chatMessageHandler.getChatMessages(any()))
-            .thenReturn(
-                Flux.just(
-                    sampleChatMessage("id-1", "some-channel"),
-                    sampleChatMessage("id-2", "some-channel")
+                .thenReturn(
+                        Flux.error(ChatRoomNotFoundException(msg = "Room not found"))
                 )
-            )
+        whenever(chatMessageHandler.getChatMessages(any()))
+                .thenReturn(
+                        Flux.just(
+                                sampleChatMessage("id-1", "some-channel"),
+                                sampleChatMessage("id-2", "some-channel")
+                        )
+                )
 
         webTestClient.get()
-            .uri("/messages/some-channel")
-            .exchange()
-            .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
-            .expectBody()
-            .jsonPath("$.msg").isEqualTo("Room not found")
+                .uri("/messages/some-channel")
+                .exchange()
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.msg").isEqualTo("Room not found")
     }
 
     private fun sampleChatMessage(id: String, chatRoomId: String): ChatMessage =
-        ChatMessage(
-            id = id,
-            chatRoomId = chatRoomId,
-            creationDate = Instant.now(),
-            payload = ""
-        )
+            ChatMessage(
+                    id = id,
+                    chatRoomId = chatRoomId,
+                    creationDate = Instant.now(),
+                    payload = ""
+            )
 }

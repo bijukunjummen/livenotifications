@@ -11,7 +11,7 @@ class FirestoreConfiguration {
     @Bean
     fun firestore(@Value("\${firestore.host:}") firestoreHost: String): Firestore {
         val builder: FirestoreOptions.Builder = FirestoreOptions
-            .newBuilder()
+                .newBuilder()
         if (firestoreHost.isNotEmpty()) {
             builder.setEmulatorHost(firestoreHost)
             builder.setHost(firestoreHost)
