@@ -2,16 +2,11 @@ package org.bk.notification.service
 
 import com.google.api.core.ApiFuture
 import com.google.cloud.Timestamp
-import com.google.cloud.firestore.CollectionReference
-import com.google.cloud.firestore.DocumentReference
-import com.google.cloud.firestore.DocumentSnapshot
-import com.google.cloud.firestore.Firestore
-import com.google.cloud.firestore.Query
-import com.google.cloud.firestore.QueryDocumentSnapshot
-import com.google.cloud.firestore.QuerySnapshot
-import com.google.cloud.firestore.WriteResult
+import com.google.cloud.firestore.*
+import org.bk.notification.extensions.loggerFor
 import org.bk.notification.model.ChatMessage
 import org.bk.notification.toMono
+import org.slf4j.Logger
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -49,6 +44,29 @@ class FirestoreChatMessageRepository(
         }
     }
 
+    override fun deleteChatMessage(channelId: String, chatMessageId: String): Mono<Boolean> {
+        val notificationCollectionRef: CollectionReference =
+                firestore.collection(CHANNELS).document(channelId).collection(NOTIFICATIONS)
+        val chatMessageDocumentRef: DocumentReference = notificationCollectionRef.document(chatMessageId)
+        val chatMessageSnapshotFuture: ApiFuture<DocumentSnapshot> = chatMessageDocumentRef.get()
+        return chatMessageSnapshotFuture.toMono()
+                .flatMap { document: DocumentSnapshot ->
+                    if (document.exists()) {
+                        document
+                                .reference
+                                .delete()
+                                .toMono()
+                                .map { writeResult ->
+                                    LOGGER.info("Deleted chatRoomId: {}, chatMessageId: {} at time: {}",
+                                            channelId, chatMessageId, writeResult.updateTime)
+                                    true
+                                }
+                    } else {
+                        Mono.just(false)
+                    }
+                }
+    }
+
     private fun toChatMessage(channelId: String, documentSnapshot: DocumentSnapshot): ChatMessage {
         val timestamp: Instant = documentSnapshot.getTimestamp(CREATION_DATE)
                 ?.let { ts -> Instant.ofEpochSecond(ts.seconds, ts.nanos.toLong()) }
@@ -74,9 +92,8 @@ class FirestoreChatMessageRepository(
     companion object {
         private const val CHANNELS = "notification_channels"
         private const val NOTIFICATIONS = "notifications"
-        private const val ID = "id"
         private const val CREATION_DATE = "creationDate"
-        private const val CHANNEL_ID = "channelId"
         private const val PAYLOAD = "payload"
+        private val LOGGER: Logger = loggerFor<FirestoreChatRoomRepository>()
     }
 }

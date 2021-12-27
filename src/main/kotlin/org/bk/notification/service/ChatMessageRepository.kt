@@ -19,4 +19,15 @@ interface ChatMessageRepository {
      * @param count of recent notifications
      */
     fun getLatestSavedChatMessages(count: Int = 25, channelId: String, latestFirst: Boolean = true): Flux<ChatMessage>
+
+
+    /**
+     * Delete a chat message from a room
+     *
+     * @param chatMessageId id of the chat message
+     *
+     * @return if the delete is successful
+     */
+    fun deleteChatMessage(chatRoomId: String, chatMessageId: String): Mono<Boolean>
+
 }

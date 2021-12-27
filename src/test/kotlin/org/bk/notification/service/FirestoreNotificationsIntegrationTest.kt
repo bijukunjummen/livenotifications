@@ -66,6 +66,24 @@ class FirestoreNotificationsIntegrationTest {
                     assertThat(n).isEqualTo(notification)
                 }
                 .verifyComplete()
+
+        StepVerifier.create(chatMessageRepository.deleteChatMessage("some-channel", "id-1"))
+                .assertNext{status ->
+                    assertThat(status).isTrue()
+                }
+                .verifyComplete()
+        StepVerifier.create(chatMessageRepository
+                .deleteChatMessage("some-channel", "unknown-message-id"))
+                .assertNext{status ->
+                    assertThat(status).isFalse()
+                }
+                .verifyComplete()
+        StepVerifier.create(chatMessageRepository
+                .deleteChatMessage("unknown-channel", "unknown-message-id"))
+                .assertNext{status ->
+                    assertThat(status).isFalse()
+                }
+                .verifyComplete()
     }
 
     private fun sampleNotification(id: String, channelId: String): ChatMessage =
