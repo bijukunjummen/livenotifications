@@ -1,6 +1,5 @@
 package org.bk.notification.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.NoCredentials
 import com.google.cloud.firestore.FirestoreOptions
 import org.assertj.core.api.Assertions.assertThat
@@ -8,7 +7,6 @@ import org.bk.notification.model.ChatMessage
 import org.bk.notification.model.ChatRoom
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.testcontainers.containers.FirestoreEmulatorContainer
 import org.testcontainers.junit.jupiter.Container
@@ -20,12 +18,8 @@ import java.time.Instant
 @JsonTest
 @Testcontainers
 class FirestoreNotificationsIntegrationTest {
-
     private lateinit var chatMessageRepository: FirestoreChatMessageRepository
     private lateinit var chatRoomRepository: FirestoreChatRoomRepository
-
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
 
     @BeforeEach
     fun beforeEach() {
