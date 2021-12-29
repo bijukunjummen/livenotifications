@@ -7,16 +7,14 @@ import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.WriteResult
 import org.bk.notification.model.ChatRoom
 import org.bk.notification.toMono
-import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 
-@Repository
 class FirestoreChatRoomRepository(
         private val firestore: Firestore
 ) : ChatRoomRepository {
     override fun save(chatRoom: ChatRoom): Mono<ChatRoom> {
         return Mono.defer {
-            val documentReference: DocumentReference = firestore.collection(ServiceConstants.CHANNELS)
+            val documentReference: DocumentReference = firestore.collection(ServiceConstants.CHAT_ROOMS)
                     .document(chatRoom.id)
 
             val result: ApiFuture<WriteResult> = documentReference.set(mapOf(NAME to chatRoom.name))
@@ -27,7 +25,7 @@ class FirestoreChatRoomRepository(
     override fun getRoom(chatRoomId: String): Mono<ChatRoom> {
         return Mono.defer {
             val chatRoomRef: DocumentReference =
-                    firestore.collection(ServiceConstants.CHANNELS).document(chatRoomId)
+                    firestore.collection(ServiceConstants.CHAT_ROOMS).document(chatRoomId)
             val result: ApiFuture<DocumentSnapshot> = chatRoomRef.get()
 
             result.toMono()

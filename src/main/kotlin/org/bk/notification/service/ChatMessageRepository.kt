@@ -18,7 +18,7 @@ interface ChatMessageRepository {
      *
      * @param count of recent notifications
      */
-    fun getLatestSavedChatMessages(count: Int = 25, channelId: String, latestFirst: Boolean = true): Flux<ChatMessage>
+    fun getLatestSavedChatMessages(count: Long = 25, chatRoomId: String, latestFirst: Boolean = true): Flux<ChatMessage>
 
 
     /**

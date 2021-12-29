@@ -35,11 +35,11 @@ class ChatController(private val chatMessageHandler: ChatMessageHandler) {
         )
     }
 
-    @GetMapping(path = ["/{channelId}"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun getNotifications(@PathVariable("channelId") channelId: String): Flux<ServerSentEvent<ChatMessage>> {
+    @GetMapping(path = ["/{chatRoomId}"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getNotifications(@PathVariable("chatRoomId") chatRoomId: String): Flux<ServerSentEvent<ChatMessage>> {
         return Flux.concat(
-            chatMessageHandler.getOldChatMessages(channelId),
-            chatMessageHandler.getChatMessages(channelId)
+            chatMessageHandler.getOldChatMessages(chatRoomId),
+            chatMessageHandler.getChatMessages(chatRoomId)
         ).map { chatMessage -> ServerSentEvent.builder<ChatMessage>().data(chatMessage).build() }
     }
 }
