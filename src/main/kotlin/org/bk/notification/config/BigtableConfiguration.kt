@@ -18,8 +18,8 @@ class BigtableConfiguration {
             return BigtableDataClient
                     .create(BigtableDataSettings
                             .newBuilderForEmulator(bigtableProperties.emulatorPort)
-                            .setProjectId("projectId")
-                            .setInstanceId("instanceId")
+                            .setProjectId(bigtableProperties.projectId)
+                            .setInstanceId(bigtableProperties.instanceId)
                             .build())
         }
         return BigtableDataClient

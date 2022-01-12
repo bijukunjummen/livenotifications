@@ -43,14 +43,17 @@ class BigtableChatMessageRepository(private val bigtableDataClient: BigtableData
             val keyPrefix = "MESSAGES/R#${chatRoomId}/TS#"
             val query: Query = Query.create(TABLE_ID).limit(count).prefix(keyPrefix)
             val rows: ServerStream<Row> = bigtableDataClient.readRows(query)
-            val mutableList = mutableListOf<ChatMessage>()
-            for (row: Row in rows) {
+            val list: List<ChatMessage> = rows.map { row ->
                 val chatMessageId: String = row.getCells(CHAT_MESSAGE_DETAILS_FAMILY).get(0).value.toStringUtf8()
                 val key = "MESSAGES/R#${chatRoomId}/M#${chatMessageId}"
-                val chatMessage: ChatMessage = bigtableDataClient.readRow(TABLE_ID, key).let { row -> toChatMessage(row) }
-                mutableList.add(chatMessage)
+                bigtableDataClient.readRow(TABLE_ID, key).let { row -> toChatMessage(row) }
+            }.toList()
+
+            if (latestFirst) {
+                Flux.fromIterable(list)
+            } else {
+                Flux.fromIterable(list.reversed())
             }
-            Flux.fromIterable(mutableList)
         }
     }
 
@@ -66,7 +69,11 @@ class BigtableChatMessageRepository(private val bigtableDataClient: BigtableData
                 .toStringUtf8()
 
         val payload = row.getCells(CHAT_MESSAGE_DETAILS_FAMILY, PAYLOAD_QUALIFIER).first().value.toStringUtf8()
-        return ChatMessage(id = id, creationDate = Instant.parse(creationDateAsString), chatRoomId = chatRoomId, payload = payload)
+        return ChatMessage(
+                id = id,
+                creationDate = Instant.parse(creationDateAsString),
+                chatRoomId = chatRoomId,
+                payload = payload)
     }
 
     override fun deleteChatMessage(chatRoomId: String, chatMessageId: String): Mono<Boolean> {

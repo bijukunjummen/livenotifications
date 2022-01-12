@@ -1,3 +1,5 @@
+# Live Notification
+
 ## Run locally
 
 ### Start Redis
@@ -13,6 +15,14 @@ gcloud components install cloud-firestore-emulator
 gcloud beta emulators firestore start --host-port=:8662
 ```
 
+OR 
+
+### Start Bigtable Emulator
+
+```shell
+gcloud components install bigtable
+gcloud beta emulators bigtable start --host-port=8086
+```
 # Create chat rooms
 
 ```sh
