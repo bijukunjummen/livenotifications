@@ -55,6 +55,6 @@ bootRun {
 
 jib {
     from {
-        image = 'gcr.io/distroless/java17:latest'
+        image = 'gcr.io/distroless/java17-debian11'
     }
 }
