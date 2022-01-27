@@ -46,7 +46,7 @@ class BigtableChatMessageRepository(private val bigtableDataClient: BigtableData
             val list: List<ChatMessage> = rows.map { row ->
                 val chatMessageId: String = row.getCells(CHAT_MESSAGE_DETAILS_FAMILY).get(0).value.toStringUtf8()
                 val key = "MESSAGES/R#${chatRoomId}/M#${chatMessageId}"
-                bigtableDataClient.readRow(TABLE_ID, key).let { row -> toChatMessage(row) }
+                toChatMessage(bigtableDataClient.readRow(TABLE_ID, key))
             }.toList()
 
             if (latestFirst) {
