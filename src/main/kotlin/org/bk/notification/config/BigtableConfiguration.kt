@@ -1,5 +1,6 @@
 package org.bk.notification.config
 
+import com.google.api.gax.core.NoCredentialsProvider
 import com.google.cloud.ServiceOptions
 import com.google.cloud.bigtable.data.v2.BigtableDataClient
 import com.google.cloud.bigtable.data.v2.BigtableDataSettings
@@ -20,6 +21,7 @@ class BigtableConfiguration {
                             .newBuilderForEmulator(bigtableProperties.emulatorPort)
                             .setProjectId(bigtableProperties.projectId)
                             .setInstanceId(bigtableProperties.instanceId)
+                            .setCredentialsProvider(NoCredentialsProvider.create())
                             .build())
         }
         return BigtableDataClient

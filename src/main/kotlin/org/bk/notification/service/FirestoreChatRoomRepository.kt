@@ -14,8 +14,8 @@ class FirestoreChatRoomRepository(
 ) : ChatRoomRepository {
     override fun save(chatRoom: ChatRoom): Mono<ChatRoom> {
         return Mono.defer {
-            val documentReference: DocumentReference = firestore.collection(ServiceConstants.CHAT_ROOMS)
-                    .document(chatRoom.id)
+            val documentReference: DocumentReference =
+                    firestore.collection(ServiceConstants.CHAT_ROOMS).document(chatRoom.id)
 
             val result: ApiFuture<WriteResult> = documentReference.set(mapOf(NAME to chatRoom.name))
             result.toMono().map { chatRoom }

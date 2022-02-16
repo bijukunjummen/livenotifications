@@ -5,3 +5,9 @@ bigtable:
   instance-id: 'bus-instance'
   project-id: 'project-id'
   emulator-port: 8086
+
+spanner:
+  emulator-host-port: "localhost:9010"
+  instance-id: 'test-instance'
+  database: 'sample'
+  config-id: "emulator-config"
