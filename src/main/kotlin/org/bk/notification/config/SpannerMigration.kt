@@ -5,9 +5,10 @@ import com.google.cloud.spanner.*
 import org.bk.notification.toMono
 
 class SpannerMigration(
-        private val spanner: Spanner,
-        private val databaseAdminClient: DatabaseAdminClient,
-        private val spannerProperties: SpannerProperties) {
+    private val spanner: Spanner,
+    private val databaseAdminClient: DatabaseAdminClient,
+    private val spannerProperties: SpannerProperties
+) {
 
     init {
         migrate()
@@ -31,13 +32,13 @@ class SpannerMigration(
             val databaseId = DatabaseId.of(instance.id, spannerProperties.database)
             val database = databaseAdminClient.newDatabaseBuilder(databaseId).build()
             val statements = listOf(
-                    """
+                """
                         CREATE TABLE ChatRooms(
                         ChatRoomId STRING(100) NOT NULL, 
                         ChatRoomName STRING(100)
                         ) PRIMARY KEY(ChatRoomId)
                     """.trimIndent(),
-                    """
+                """
                         CREATE TABLE ChatRoomMessages(
                         ChatMessageId String(100) NOT NULL,
                         ChatRoomId STRING(100), 
@@ -56,14 +57,16 @@ class SpannerMigration(
             return spanner.instanceAdminClient.getInstance(spannerProperties.instanceId)
         } catch (e: InstanceNotFoundException) {
             return spanner.instanceAdminClient
-                    .createInstance(
-                            InstanceInfo.newBuilder(
-                                    InstanceId.of(projectId, instanceId))
-                                    .setInstanceConfigId(InstanceConfigId.of(projectId, spannerProperties.configId))
-                                    .setDisplayName(instanceId)
-                                    .setProcessingUnits(100)
-                                    .build())
-                    .get()
+                .createInstance(
+                    InstanceInfo.newBuilder(
+                        InstanceId.of(projectId, instanceId)
+                    )
+                        .setInstanceConfigId(InstanceConfigId.of(projectId, spannerProperties.configId))
+                        .setDisplayName(instanceId)
+                        .setProcessingUnits(100)
+                        .build()
+                )
+                .get()
         }
     }
 }

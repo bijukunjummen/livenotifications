@@ -21,7 +21,13 @@ OR
 
 ```shell
 gcloud components install bigtable
-gcloud beta emulators bigtable start --host-port=8086
+gcloud beta emulators bigtable start --host-port=0.0.0.0:8086
+
+export BIGTABLE_EMULATOR_HOST=localhost:8086
+cbt -project "project-id" -instance "bus-instance" createtable chat_messages
+cbt -project "project-id" -instance "bus-instance" createfamily chat_messages chatRoomDetails
+cbt -project "project-id" -instance "bus-instance" createfamily chat_messages chatMessageDetails
+cbt -project "project-id" -instance "bus-instance" read chat_messages
 ```
 
 OR

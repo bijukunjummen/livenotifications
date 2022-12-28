@@ -17,19 +17,23 @@ class BigtableConfiguration {
     fun bigtableDataClient(bigtableProperties: BigtableProperties): BigtableDataClient {
         if (bigtableProperties.emulatorPort != 0) {
             return BigtableDataClient
-                    .create(BigtableDataSettings
-                            .newBuilderForEmulator(bigtableProperties.emulatorPort)
-                            .setProjectId(bigtableProperties.projectId)
-                            .setInstanceId(bigtableProperties.instanceId)
-                            .setCredentialsProvider(NoCredentialsProvider.create())
-                            .build())
+                .create(
+                    BigtableDataSettings
+                        .newBuilderForEmulator(bigtableProperties.emulatorPort)
+                        .setProjectId(bigtableProperties.projectId)
+                        .setInstanceId(bigtableProperties.instanceId)
+                        .setCredentialsProvider(NoCredentialsProvider.create())
+                        .build()
+                )
         }
         return BigtableDataClient
-                .create(BigtableDataSettings
-                        .newBuilder()
-                        .setInstanceId(bigtableProperties.instanceId)
-                        .setProjectId(ServiceOptions.getDefaultProjectId())
-                        .build())
+            .create(
+                BigtableDataSettings
+                    .newBuilder()
+                    .setInstanceId(bigtableProperties.instanceId)
+                    .setProjectId(ServiceOptions.getDefaultProjectId())
+                    .build()
+            )
     }
 
     @Bean

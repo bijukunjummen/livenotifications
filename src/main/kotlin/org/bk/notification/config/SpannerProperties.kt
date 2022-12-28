@@ -7,9 +7,8 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConfigurationProperties(prefix = "spanner")
 @ConstructorBinding
 data class SpannerProperties(
-        val instanceId: String = "",
-        val database: String = "",
-        val emulatorHostPort: String = "",
-        val configId: String = "us-west1"
-
+    val instanceId: String = "",
+    val database: String = "",
+    val emulatorHostPort: String = "",
+    val configId: String = "us-west1"
 )

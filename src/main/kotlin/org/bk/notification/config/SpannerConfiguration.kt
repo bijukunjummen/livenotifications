@@ -17,9 +17,9 @@ class SpannerConfiguration {
     fun spanner(spannerProperties: SpannerProperties): Spanner {
         if (spannerProperties.emulatorHostPort.isNotEmpty()) {
             return SpannerOptions.newBuilder()
-                    .setCredentials(NoCredentials.getInstance())
-                    .setEmulatorHost(spannerProperties.emulatorHostPort).build()
-                    .service
+                .setCredentials(NoCredentials.getInstance())
+                .setEmulatorHost(spannerProperties.emulatorHostPort).build()
+                .service
         }
         return SpannerOptions.newBuilder().build().service
     }
@@ -27,7 +27,8 @@ class SpannerConfiguration {
     @Bean
     @DependsOn("spannerMigration")
     fun spannerDatabaseClient(spanner: Spanner, spannerProperties: SpannerProperties): DatabaseClient {
-        val projectId = if (spannerProperties.emulatorHostPort.isNotEmpty()) "sample-project" else ServiceOptions.getDefaultProjectId()
+        val projectId =
+            if (spannerProperties.emulatorHostPort.isNotEmpty()) "sample-project" else ServiceOptions.getDefaultProjectId()
         val databaseId = DatabaseId.of(projectId, spannerProperties.instanceId, spannerProperties.database)
         return spanner.getDatabaseClient(databaseId)
     }
@@ -48,9 +49,11 @@ class SpannerConfiguration {
     }
 
     @Bean
-    fun spannerMigration(spanner: Spanner,
-                         databaseAdminClient: DatabaseAdminClient,
-                         spannerProperties: SpannerProperties): SpannerMigration {
+    fun spannerMigration(
+        spanner: Spanner,
+        databaseAdminClient: DatabaseAdminClient,
+        spannerProperties: SpannerProperties
+    ): SpannerMigration {
         return SpannerMigration(spanner, databaseAdminClient, spannerProperties)
     }
 }
