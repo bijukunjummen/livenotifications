@@ -8,7 +8,6 @@ import com.google.cloud.bigtable.data.v2.BigtableDataSettings
 import org.assertj.core.api.Assertions.assertThat
 import org.bk.notification.model.ChatMessage
 import org.bk.notification.model.ChatRoom
-import org.bk.notification.model.Page
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -99,13 +98,13 @@ class BigtableNotificationsIntegrationTest {
 
         val p2 = chatMessageRepository.getPaginatedMessages(
             chatRoomId = "some-channel",
-            from = p1.lastResult,
+            offset = p1.lastResult,
             count = 1
         )
         assertThat(p2.data).isEqualTo(listOf(not2))
         val p3 = chatMessageRepository.getPaginatedMessages(
             chatRoomId = "some-channel",
-            from = p2.lastResult,
+            offset = p2.lastResult,
             count = 2
         )
         assertThat(p3.data).isEqualTo(listOf(not3, not4))

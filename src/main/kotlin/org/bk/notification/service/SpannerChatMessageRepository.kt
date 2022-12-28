@@ -75,8 +75,8 @@ class SpannerChatMessageRepository(private val databaseClient: DatabaseClient) :
             }
     }
 
-    override fun getPaginatedMessages(chatRoomId: String, from: String, count: Long): Page<ChatMessage> {
-        val offset = if (from.isNotEmpty()) from.toLong() else 0L
+    override fun getPaginatedMessages(chatRoomId: String, offset: String, count: Long): Page<ChatMessage> {
+        val offset = if (offset.isNotEmpty()) offset.toLong() else 0L
 
         val selectQuery = """
             SELECT $CHAT_MESSAGE_ID, $CHAT_ROOM_ID, $PAYLOAD, $CREATION_DATE 

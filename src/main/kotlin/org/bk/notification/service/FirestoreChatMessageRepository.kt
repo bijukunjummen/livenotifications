@@ -45,7 +45,7 @@ class FirestoreChatMessageRepository(
         }
     }
 
-    override fun getPaginatedMessages(chatRoomId: String, from: String, count: Long): Page<ChatMessage> {
+    override fun getPaginatedMessages(chatRoomId: String, offset: String, count: Long): Page<ChatMessage> {
         TODO("Not yet implemented")
     }
 

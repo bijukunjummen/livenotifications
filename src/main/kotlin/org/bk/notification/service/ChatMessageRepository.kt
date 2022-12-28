@@ -33,14 +33,14 @@ interface ChatMessageRepository {
      * Get paginated notifications
      *
      * @param chatRoomId chat room id
-     * @param from from which row onwards - exclusive
+     * @param offset from which row onwards - exclusive
      * @param count of recent notifications
      *
      * @return a page of chat messages
      */
     fun getPaginatedMessages(
         chatRoomId: String,
-        from: String = "",
+        offset: String = "",
         count: Long = 25,
     ): Page<ChatMessage>
 

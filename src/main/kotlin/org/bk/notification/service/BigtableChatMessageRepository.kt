@@ -2,7 +2,6 @@ package org.bk.notification.service
 
 import com.google.api.core.ApiFuture
 import com.google.api.gax.rpc.ServerStream
-import com.google.bigtable.admin.v2.Table
 import com.google.cloud.bigtable.data.v2.BigtableDataClient
 import com.google.cloud.bigtable.data.v2.models.Mutation
 import com.google.cloud.bigtable.data.v2.models.Query
@@ -15,7 +14,6 @@ import org.bk.notification.toMono
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
-import com.google.cloud.bigtable.data.v2.models.Filters.FILTERS
 
 class BigtableChatMessageRepository(private val bigtableDataClient: BigtableDataClient) : ChatMessageRepository {
     override fun save(chatMessage: ChatMessage): Mono<ChatMessage> {
@@ -66,12 +64,12 @@ class BigtableChatMessageRepository(private val bigtableDataClient: BigtableData
         }
     }
 
-    override fun getPaginatedMessages(chatRoomId: String, from: String, count: Long): Page<ChatMessage> {
+    override fun getPaginatedMessages(chatRoomId: String, offset: String, count: Long): Page<ChatMessage> {
         val keyPrefix = "MESSAGES/R#${chatRoomId}/TS#"
         val query: Query =
-            if (from.isNotEmpty()) {
+            if (offset.isNotEmpty()) {
                 Query.create(TABLE_ID).limit(count)
-                    .range(ByteStringRange.prefix(keyPrefix).startOpen(from))
+                    .range(ByteStringRange.prefix(keyPrefix).startOpen(offset))
             } else Query.create(TABLE_ID).limit(count).prefix(keyPrefix)
 
         val rows: List<Row> = bigtableDataClient.readRows(query).toList()
@@ -83,7 +81,7 @@ class BigtableChatMessageRepository(private val bigtableDataClient: BigtableData
         }
         val lastRowIndex = rows.lastIndex
         val returnFrom = if (lastRowIndex == -1) {
-            from
+            offset
         } else {
             rows.get(lastRowIndex).key.toStringUtf8()
         }
