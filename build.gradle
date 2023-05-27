@@ -1,29 +1,25 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.7.22'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.7.22'
-    id 'org.springframework.boot' version '3.0.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.8.21'
+    id 'org.springframework.boot' version '3.1.0'
     id 'io.spring.dependency-management' version '1.1.0'
-    id 'com.google.cloud.tools.jib' version '3.3.1'
+    id 'com.google.cloud.tools.jib' version '3.3.2'
 }
 
 group = 'org.bk'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
 }
 
-compileKotlin {
+tasks.withType(KotlinCompile) {
     kotlinOptions {
-        freeCompilerArgs = ["-Xjsr305=strict"]
-        jvmTarget = "17"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        freeCompilerArgs = ["-Xjsr305=strict"]
-        jvmTarget = "17"
+        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '17'
     }
 }
 
@@ -33,7 +29,6 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation("io.projectreactor:reactor-test")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
@@ -41,9 +36,9 @@ dependencies {
     implementation('com.google.cloud:google-cloud-firestore')
     implementation('com.google.cloud:google-cloud-bigtable')
     implementation('com.google.cloud:google-cloud-spanner')
-    testImplementation("org.testcontainers:testcontainers:1.17.6")
-    testImplementation("org.testcontainers:gcloud:1.17.6")
-    testImplementation("org.testcontainers:junit-jupiter:1.17.6")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:gcloud")
+    testImplementation("org.testcontainers:junit-jupiter")
 }
 
 test {
